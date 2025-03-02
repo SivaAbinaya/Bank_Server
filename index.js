@@ -1,17 +1,63 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+  var express=require('express');
+  var mongoose=require('mongoose');
+  var app=express();
+  var cors=require('cors');
+  app.use(cors());
+  app.use(express.json());
+  
+  //create a root path
+  app.get('/',(req,res)=>{res.send("welcome")})
+  
+  //open the port
+  app.listen(5000,()=>{console.log("Server Connected")});
+  
+  //connect 
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+  mongoose.connect('mongodb+srv://sivaabinayamuthukumar:sivaabinaya@cluster0.da0vh.mongodb.net/bank').then(()=>{console.log("DB connected")}).catch((err)=>console.log((err)))
+  //create a schema
+  
+  let data=new mongoose.Schema({
+      name:String,
+      email:String,
+      password:String,
+      amount:Number
+  })
+  let log = new mongoose.Schema({
+    login:Boolean
+  })
+  
+  let Data=mongoose.model("users",data)
+  let Log=mongoose.model("Log",log)
+  
+  // let data2=new Log({
+  //   login:false
+  // })
+  // data2.save()
+  
+  //API FOR FETCHING THE DATA
+  
+  app.get('/data',(req,res)=>(Data.find().then((item)=>res.send(item))))
+  
+  //API FOR CREATING DATA
+  app.post('/create',(req,res)=>(Data.create(req.body).then((item)=>res.send(item))))
+  
+  
+  app.delete('/delete/:id', async (req, res) => {
+      try {
+        await Data.findByIdAndDelete(req.params.id);
+        res.send({ message: "Data deleted successfully" });
+      } catch (error) {
+        res.status(500).send({ message: "Error deleting data", error });
+      }
+    });
+    
+    //  UPDATE 
+      app.put('/update/:id', async (req, res) => {
+          try {
+          const updatedData = await Data.findByIdAndUpdate(req.params.id, req.body, { new: true });
+          res.send(updatedData);
+          } catch (error) {
+          res.status(500).send({ message: "Error updating data", error });
+          }
+      });
+  
