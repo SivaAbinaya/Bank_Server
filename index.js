@@ -20,7 +20,12 @@
       name:String,
       email:String,
       password:String,
-      amount:Number
+      amount:Number,
+      accountnum:Number,
+      ifsccode:String,
+      accounttype:String,
+      pin:Number,
+      phonenumber:Number
   })
   let log = new mongoose.Schema({
     login:Boolean
